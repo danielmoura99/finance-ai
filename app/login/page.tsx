@@ -22,7 +22,7 @@ const LoginPage = async () => {
           className="mb-8"
         />
         <h1 className="mb-3 text-4xl font-bold">Bem-vindo</h1>
-        <p className="text-muted-foreground mb-8">
+        <p className="mb-8 text-muted-foreground">
           {" "}
           Venha fazer parte da maior Mesa do Brasil.
         </p>
