@@ -43,6 +43,8 @@ import {
 } from "../_constants/transactions";
 import { DatePicker } from "./ui/date-picker";
 import { DialogClose } from "@radix-ui/react-dialog";
+import { addTransactin, addTransaction } from "../_actions/add-transaction";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().trim().min(1, {
@@ -72,10 +74,11 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 const AddTransactionButton = () => {
+  const [dialogIsOpen, setDialogIsOpen] = useState(false);
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      amount: "",
+      amount: 0,
       category: TransactionCategory.OTHER,
       date: new Date(),
       name: "",
@@ -84,13 +87,20 @@ const AddTransactionButton = () => {
     },
   });
 
-  const onSubmit = (data: FormSchema) => {
-    console.log({ data });
+  const onSubmit = async (data: FormSchema) => {
+    try {
+      await upsertTransaction({ ...data, id: transactionId });
+      setDialogIsOpen(false);
+      form.reset();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <Dialog
       onOpenChange={(open) => {
+        setDialogIsOpen(open);
         if (!open) {
           form.reset();
         }
