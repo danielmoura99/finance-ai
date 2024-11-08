@@ -1,6 +1,7 @@
 import { Button } from "./ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -8,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-
 import {
   Form,
   FormControl,
@@ -32,22 +32,21 @@ import {
   TRANSACTION_TYPE_OPTIONS,
 } from "../_constants/transactions";
 import { DatePicker } from "./ui/date-picker";
-import { DialogClose } from "@radix-ui/react-dialog";
 import { z } from "zod";
 import {
+  TransactionType,
   TransactionCategory,
   TransactionPaymentMethod,
-  TransactionType,
 } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { upsertTransaction } from "../_actions/add-transaction";
+import { upsertTransaction } from "../_actions/upsert-transaction";
 
 interface UpsertTransactionDialogProps {
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
   defaultValues?: FormSchema;
   transactionId?: string;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
 const formSchema = z.object({
@@ -67,7 +66,7 @@ const formSchema = z.object({
   category: z.nativeEnum(TransactionCategory, {
     required_error: "A categoria é obrigatória.",
   }),
-  paymentMethod: z.nativeEnum(TransactionPaymentMethod, {
+  paymentmethod: z.nativeEnum(TransactionPaymentMethod, {
     required_error: "O método de pagamento é obrigatório.",
   }),
   date: z.date({
@@ -86,11 +85,11 @@ const UpsertTransactionDialog = ({
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultValues ?? {
-      amount: 0,
+      amount: 50,
       category: TransactionCategory.OTHER,
       date: new Date(),
       name: "",
-      paymentMethod: TransactionPaymentMethod.CASH,
+      paymentmethod: TransactionPaymentMethod.CASH,
       type: TransactionType.EXPENSE,
     },
   });
@@ -121,10 +120,11 @@ const UpsertTransactionDialog = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {isUpdate ? "Atualizar" : "Criar"}Adicionar Transações
+            {isUpdate ? "Atualizar" : "Criar"} transação
           </DialogTitle>
           <DialogDescription>Insira as informações abaixo</DialogDescription>
         </DialogHeader>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
@@ -134,7 +134,7 @@ const UpsertTransactionDialog = ({
                 <FormItem>
                   <FormLabel>Nome</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite o nome" {...field} />
+                    <Input placeholder="Digite o nome..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,7 +173,7 @@ const UpsertTransactionDialog = ({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tipo..." />
+                        <SelectValue placeholder="Select a verified email to display" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -217,10 +217,10 @@ const UpsertTransactionDialog = ({
             />
             <FormField
               control={form.control}
-              name="paymentMethod"
+              name="paymentmethod"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Método de Pagamento</FormLabel>
+                  <FormLabel>Método de pagamento</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -253,7 +253,6 @@ const UpsertTransactionDialog = ({
                 </FormItem>
               )}
             />
-
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="button" variant="outline">
@@ -261,7 +260,7 @@ const UpsertTransactionDialog = ({
                 </Button>
               </DialogClose>
               <Button type="submit">
-                {isUpdate ? "Atualizar" : "Adicionar"}Adicionar
+                {isUpdate ? "Atualizar" : "Adicionar"}
               </Button>
             </DialogFooter>
           </form>

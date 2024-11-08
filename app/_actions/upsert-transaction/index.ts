@@ -1,9 +1,8 @@
-"use-server";
+"use server";
 
 import { db } from "@/app/_lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import {
-  Prisma,
   TransactionCategory,
   TransactionPaymentMethod,
   TransactionType,
@@ -17,7 +16,7 @@ interface UpsertTransactionParams {
   amount: number;
   type: TransactionType;
   category: TransactionCategory;
-  paymentMethod: TransactionPaymentMethod;
+  paymentmethod: TransactionPaymentMethod;
   date: Date;
 }
 
@@ -29,7 +28,7 @@ export const upsertTransaction = async (params: UpsertTransactionParams) => {
   }
   await db.transaction.upsert({
     where: {
-      id: params.id,
+      id: params.id ?? "",
     },
     update: { ...params, userId },
     create: { ...params, userId },

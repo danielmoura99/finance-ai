@@ -10,10 +10,6 @@ interface EditTransactionButtonProps {
   transaction: Transaction;
 }
 
-interface EditTransactionButtonProps {
-  transaction: Transaction;
-}
-
 const EditTransactionButton = ({ transaction }: EditTransactionButtonProps) => {
   const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
