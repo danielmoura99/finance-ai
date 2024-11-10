@@ -77,11 +77,16 @@ export const getDashboard = async (month: string) => {
       (Number(category._sum.amount) / Number(expensesTotal)) * 100,
     ),
   }));
-  const lastTransactions = await db.transaction.findMany({
-    where,
-    orderBy: { date: "desc" },
-    take: 50,
-  });
+  const lastTransactions = (
+    await db.transaction.findMany({
+      where,
+      orderBy: { date: "desc" },
+      take: 50,
+    })
+  ).map((transaction) => ({
+    ...transaction,
+    amount: transaction.amount.toNumber(), // Converte Decimal para número
+  }));
   return {
     balance,
     depositsTotal,
